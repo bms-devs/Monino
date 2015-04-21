@@ -1,0 +1,9 @@
+---
+- name: Remove /etc/profile.d/raspi-config.sh so raspi-config doesn't start on system startup
+  file: path=/etc/profile.d/raspi-config.sh state=absent
+
+- name: Enable standard login on tty1 (in case raspi-config hasn't done it)
+  lineinfile: dest=/etc/inittab regexp="^1:2345:respawn:.*$" line="1:2345:respawn:/sbin/getty --noclear 38400 tty1"
+
+- name: Remove the RPICFG_TO_ENABLE line from /etc/inittab (in case raspi-config hasn't done it)
+  lineinfile: dest=/etc/inittab regexp="^.*RPICFG_TO_ENABLE.*$" state=absent

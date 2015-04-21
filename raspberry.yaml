@@ -1,0 +1,159 @@
+- hosts: all
+  sudo: yes
+  remote_user: pi
+
+  roles:
+  - disable-raspi-config
+
+  tasks:
+    - name: Update package cache if older than one hour (apt-get update)
+      apt: update_cache=yes cache_valid_time=3600
+
+    - name: Upgrade all old packages (apt-get dist-upgrade)
+      apt: upgrade=dist
+
+    - name: Install useful utilities
+      apt: name={{ item }} state=present
+      with_items:
+      - mc
+      - telnet
+      - vim
+      - debsums
+
+    - name: Remove rubbish Raspberry Pi packages
+      apt: name={{ item }} state=absent purge=yes
+      with_items:
+      - idle
+      - idle-python2.7
+      - idle-python3.2
+      - idle3
+      - penguinspuzzle
+      - pistore
+      - scratch
+      - smartsim
+      - squeak-plugins-scratch
+      - squeak-vm
+      - wolfram-engine
+
+    - name: Remove ALSA and other sound-related packages
+      apt: name={{ item }} state=absent purge=yes
+      with_items:
+      - alsa-base
+      - alsa-utils
+      - esound-common
+      - jackd
+      - jackd2
+      - libesd0
+      - libjack-jackd2-0
+      - libsclang1
+      - libscsynth1
+      - sonic-pi
+      - supercollider
+      - supercollider-common
+      - supercollider-server
+      - timidity
+      - qjackctl
+
+    - name: Remove CUPS packages
+      apt: name={{ item }} state=absent purge=yes
+      with_items:
+      - cups-bsd
+      - cups-client
+      - cups-common
+
+    - name: Remove dphys-swapfile package
+      apt: name=dphys-swapfile state=absent purge=yes
+
+    - name: Remove old /var/swap file
+      file: path=/var/swap state=absent
+
+#    - name: Remove remaining dependencies of other packages (apt-get autoremove)
+#      shell: apt-get autoremove
+
+    - name: Install cpufrequtils
+      apt: name=cpufrequtils state=present
+
+    - name: Configure cpufrequtils
+      copy: src=files/etc/default/cpufrequtils dest=/etc/default/cpufrequtils mode=0644
+      notify: restart cpufrequtils
+
+    - name: Set disable_overscan=1 in /boot/config.txt
+      lineinfile: dest=/boot/config.txt line="disable_overscan=1"
+
+    - name: Set BLANK_TIME=0 in /etc/kbd/config
+      lineinfile: dest=/etc/kbd/config regexp="^BLANK_TIME=\d+$" line="BLANK_TIME=0"
+      notify: restart kbd
+
+    - name: Set POWERDOWN_TIME=0 in /etc/kbd/config
+      lineinfile: dest=/etc/kbd/config regexp="^POWERDOWN_TIME=\d+$" line="POWERDOWN_TIME=0"
+      notify: restart kbd
+
+    - name: Create '/usr/share/X11/xorg.conf.d/30-disable-screen-blanking.conf' to disable X11 screen blanking
+      copy: src=files/usr/share/X11/xorg.conf.d/30-disable-screen-blanking.conf dest=/usr/share/X11/xorg.conf.d/30-disable-screen-blanking.conf mode=0644
+
+    - name: Disable lightdm so default X11 desktop doesn't start
+      service: name=lightdm enabled=no
+
+    - name: Install Chromium browser
+      apt: name=chromium-browser state=present
+
+    - name: Install Unclutter to make mouse cursor disappear
+      apt: name=unclutter state=present
+
+    - name: Install Python libraries
+      apt: name=python-yaml state=present
+
+    - name: Create /usr/local/share/monino directory
+      file: dest=/usr/local/share/monino mode=0755 state=directory
+
+    - name: Install /usr/local/share/monino/browser.sh
+      copy: src=files/usr/local/share/monino/browser.sh dest=/usr/local/share/monino/browser.sh mode=0755
+
+    - name: Install /usr/local/share/monino/browser-chromium.sh
+      copy: src=files/usr/local/share/monino/browser-chromium.sh dest=/usr/local/share/monino/browser-chromium.sh mode=0755
+
+    - name: Install /usr/local/share/monino/xsession.sh
+      copy: src=files/usr/local/share/monino/xsession.sh dest=/usr/local/share/monino/xsession.sh mode=0755
+
+    - name: Create an empty /usr/local/share/monino/chromium-config directory
+      file: name=/usr/local/share/monino/chromium-config state=directory mode=0755
+
+    - name: Create a "First Run" file in /usr/local/share/monino/chromium-config
+      copy: src="files/usr/local/share/monino/chromium-config/First Run" dest="/usr/local/share/monino/chromium-config/First Run" mode=0644
+
+    - name: Create a "Local State" file in /usr/local/share/monino/chromium-config
+      copy: src="files/usr/local/share/monino/chromium-config/Local State" dest="/usr/local/share/monino/chromium-config/Local State" mode=0644
+
+    - name: Create a 'monino' group
+      group: name=monino
+
+    - name: Create a 'monino' user
+      user: name=monino group=monino shell=/bin/bash createhome=yes home=/home/monino
+
+    - name: Create /home/monino/.xsession
+      copy: src=files/home/monino/.xsession dest=/home/monino/.xsession owner=monino group=monino mode=0644
+
+    - name: Create default /home/monino/config.yaml (only if it doesn't exist)
+      copy: src=files/home/monino/config.yaml dest=/home/monino/config.yaml owner=monino group=monino mode=0644 force=no
+
+    - name: Install supervisord
+      apt: name=supervisor state=present
+
+    - name: Create /etc/supervisor/conf.d/monino.conf
+      copy: src=files/etc/supervisor/conf.d/monino.conf dest=/etc/supervisor/conf.d/monino.conf
+      notify: supervisorctl reread
+
+
+  handlers:
+    - name: restart kbd
+      service: name=kbd state=restarted
+
+    - name: restart cpufrequtils
+      service: name=cpufrequtils state=restarted
+
+    - name: supervisorctl reread
+      command: supervisorctl reread
+      notify: supervisorctl update
+
+    - name: supervisorctl update
+      command: supervisorctl update
