@@ -43,8 +43,8 @@ Installation
 How does it look like?
 ----------------------
 
-<img src="http://i.imgur.com/5aSNBBt.jpg" alt="[Raspberry Pi board]" width="400" />
-<img src="http://i.imgur.com/iRpARwK.jpg" alt="[Sample display]" width="400" />
+<img src="http://i.imgur.com/5aSNBBt.jpg" alt="[Raspberry Pi board]" width="350" />
+<img src="http://i.imgur.com/iRpARwK.jpg" alt="[Sample display]" width="350" />
 
 
 Future plans
