@@ -47,6 +47,12 @@ How does it look like?
 <img src="http://i.imgur.com/iRpARwK.jpg" alt="[Sample display]" width="350" />
 
 
+Stability
+---------
+
+We've been using these scripts for almost a year now, combined with the https://wiki.jenkins-ci.org/display/JENKINS/Build+Monitor+Plugin plugin. No software-related issues so far, the only difficulties we're experiencing is general flakiness of the Raspberry Pi hardware itself. I.e. occasional failures to turn itself on. Can't do much about it though.
+
+
 Future plans
 ------------
 
