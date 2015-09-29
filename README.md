@@ -40,6 +40,13 @@ Installation
 6. Reboot your Raspberry Pi with a `sudo reboot` command. Plug your TV. You should now see the website on your screen.
 
 
+How does it look like?
+----------------------
+
+<img src="http://i.imgur.com/5aSNBBt.jpg" alt="[Raspberry Pi board]" width="400" />
+<img src="http://i.imgur.com/iRpARwK.jpg" alt="[Sample display]" width="400" />
+
+
 Future plans
 ------------
 
