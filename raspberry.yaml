@@ -70,6 +70,9 @@
 #    - name: Remove remaining dependencies of other packages (apt-get autoremove)
 #      shell: apt-get autoremove
 
+    - name: Set the timezone to Europe/Warsaw
+      copy: src=/usr/share/zoneinfo/Europe/Warsaw dest=/etc/localtime mode=0644
+
     - name: Install cpufrequtils
       apt: name=cpufrequtils state=present
 
