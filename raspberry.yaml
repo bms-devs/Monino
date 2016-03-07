@@ -83,6 +83,15 @@
     - name: Set disable_overscan=1 in /boot/config.txt
       lineinfile: dest=/boot/config.txt line="disable_overscan=1"
 
+    - name: Set hdmi_force_hotplug=1 in /boot/config.txt (force HDMI output)
+      lineinfile: dest=/boot/config.txt line="hdmi_force_hotplug=1"
+
+    - name: Set hdmi_group=1 in /boot/config.txt (force HD output)
+      lineinfile: dest=/boot/config.txt line="hdmi_group=1"
+
+    - name: Set hdmi_mode=5 in /boot/config.txt (force HD output)
+      lineinfile: dest=/boot/config.txt line="hdmi_mode=5"
+
     - name: Set BLANK_TIME=0 in /etc/kbd/config
       lineinfile: dest=/etc/kbd/config regexp="^BLANK_TIME=\d+$" line="BLANK_TIME=0"
       notify: restart kbd
