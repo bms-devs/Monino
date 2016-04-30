@@ -1,5 +1,5 @@
 - hosts: all
-  sudo: yes
+  become: yes
   remote_user: pi
 
   roles:
@@ -23,17 +23,76 @@
     - name: Remove rubbish Raspberry Pi packages
       apt: name={{ item }} state=absent purge=yes
       with_items:
+      - blt
+      - claws-mail
+      - claws-mail-i18n
+      - coinor-libcbc3
+      - coinor-libcgl1
+      - coinor-libclp1
+      - coinor-libcoinmp1
+      - coinor-libcoinutils3
+      - coinor-libosi1
+      - dillo
+      - epiphany-browser
+      - epiphany-browser-data
+      - eject
+      - gpicview
       - idle
       - idle-python2.7
       - idle-python3.2
       - idle3
+      - idle-python3.4
+      - lp-solve
+      - minecraft-pi
+      - netsurf-common
+      - netsurf-gtk
+      - nodejs
+      - nodejs-legacy
+      - nodered
+      - omxplayer
       - penguinspuzzle
       - pistore
+      - python-minecraftpi
+      - python-tk
+      - python3-minecraftpi
+      - python3-tk
       - scratch
       - smartsim
       - squeak-plugins-scratch
       - squeak-vm
       - wolfram-engine
+      - xpdf
+      - zenity
+      - zenity-common
+
+    - name: Remove mDNS support
+      apt: name={{ item }} state=absent purge=yes
+      with_items:
+      - avahi-daemon
+      - libnss-mdns
+
+    - name: Remove Libreoffice packages
+      apt: name={{ item }} state=absent purge=yes
+      with_items:
+      - libreoffice
+      - libreoffice-avmedia-backend-gstreamer
+      - libreoffice-base
+      - libreoffice-base-core
+      - libreoffice-base-drivers
+      - libreoffice-calc
+      - libreoffice-common
+      - libreoffice-core
+      - libreoffice-draw
+      - libreoffice-gtk
+      - libreoffice-impress
+      - libreoffice-java-common
+      - libreoffice-math
+      - libreoffice-report-builder-bin
+      - libreoffice-sdbc-hsqldb
+      - libreoffice-style-galaxy
+      - libreoffice-writer
+      - uno-libs3
+      - ure
 
     - name: Remove ALSA and other sound-related packages
       apt: name={{ item }} state=absent purge=yes
@@ -41,6 +100,7 @@
       - alsa-base
       - alsa-utils
       - esound-common
+      - freepats
       - jackd
       - jackd2
       - libesd0
@@ -54,6 +114,9 @@
       - timidity
       - qjackctl
 
+    - name: Remove lightdm so default X11 desktop doesn't start
+      apt: name=lightdm state=absent purge=yes
+
     - name: Remove CUPS packages
       apt: name={{ item }} state=absent purge=yes
       with_items:
@@ -64,11 +127,11 @@
     - name: Remove dphys-swapfile package
       apt: name=dphys-swapfile state=absent purge=yes
 
-    - name: Remove old /var/swap file
-      file: path=/var/swap state=absent
-
 #    - name: Remove remaining dependencies of other packages (apt-get autoremove)
 #      shell: apt-get autoremove
+
+    - name: Remove old /var/swap file
+      file: path=/var/swap state=absent
 
     - name: Set the timezone to Europe/Warsaw
       copy: src=/usr/share/zoneinfo/Europe/Warsaw dest=/etc/localtime mode=0644
@@ -86,11 +149,11 @@
     - name: Set hdmi_force_hotplug=1 in /boot/config.txt (force HDMI output)
       lineinfile: dest=/boot/config.txt line="hdmi_force_hotplug=1"
 
-    - name: Set hdmi_group=1 in /boot/config.txt (force HD output)
+    - name: Set hdmi_group=1 in /boot/config.txt (force HD 1080p output)
       lineinfile: dest=/boot/config.txt line="hdmi_group=1"
 
-    - name: Set hdmi_mode=5 in /boot/config.txt (force HD output)
-      lineinfile: dest=/boot/config.txt line="hdmi_mode=5"
+    - name: Set hdmi_mode=16 in /boot/config.txt (force HD 1080p output)
+      lineinfile: dest=/boot/config.txt line="hdmi_mode=16"
 
     - name: Set BLANK_TIME=0 in /etc/kbd/config
       lineinfile: dest=/etc/kbd/config regexp="^BLANK_TIME=\d+$" line="BLANK_TIME=0"
@@ -103,14 +166,11 @@
     - name: Create '/usr/share/X11/xorg.conf.d/30-disable-screen-blanking.conf' to disable X11 screen blanking
       copy: src=files/usr/share/X11/xorg.conf.d/30-disable-screen-blanking.conf dest=/usr/share/X11/xorg.conf.d/30-disable-screen-blanking.conf mode=0644
 
-    - name: Disable lightdm so default X11 desktop doesn't start
-      service: name=lightdm enabled=no
-
-    - name: Install Chromium browser
-      apt: name=chromium-browser state=present
-
     - name: Install Unclutter to make mouse cursor disappear
       apt: name=unclutter state=present
+
+    - name: Install xdotool to support window operations from scripts
+      apt: name=xdotool state=present
 
     - name: Install Python libraries
       apt: name=python-yaml state=present
@@ -124,6 +184,9 @@
     - name: Install /usr/local/share/monino/browser-chromium.sh
       copy: src=files/usr/local/share/monino/browser-chromium.sh dest=/usr/local/share/monino/browser-chromium.sh mode=0755
 
+    - name: Install /usr/local/share/monino/browser-chromium-maximize.sh
+      copy: src=files/usr/local/share/monino/browser-chromium-maximize.sh dest=/usr/local/share/monino/browser-chromium-maximize.sh mode=0755
+
     - name: Install /usr/local/share/monino/xsession.sh
       copy: src=files/usr/local/share/monino/xsession.sh dest=/usr/local/share/monino/xsession.sh mode=0755
 
@@ -135,6 +198,18 @@
 
     - name: Create a "Local State" file in /usr/local/share/monino/chromium-config
       copy: src="files/usr/local/share/monino/chromium-config/Local State" dest="/usr/local/share/monino/chromium-config/Local State" mode=0644
+
+    - name: Create an empty /usr/local/share/monino/chromium-packages directory
+      file: name=/usr/local/share/monino/chromium-packages state=directory mode=0755
+
+    - name: Copy 'chromium-browser_***.deb' to /usr/local/share/monino/chromium-packages
+      copy: src="files/usr/local/share/monino/chromium-packages/chromium-browser_49.0.2623.108-0ubuntu0.14.04.1.1113_armhf.deb" dest="/usr/local/share/monino/chromium-packages/chromium-browser_49.0.2623.108-0ubuntu0.14.04.1.1113_armhf.deb" mode=0644
+
+    - name: Copy 'chromium-codecs-ffmpeg-extra_***.deb' to /usr/local/share/monino/chromium-packages
+      copy: src="files/usr/local/share/monino/chromium-packages/chromium-codecs-ffmpeg-extra_49.0.2623.108-0ubuntu0.14.04.1.1113_armhf.deb" dest="/usr/local/share/monino/chromium-packages/chromium-codecs-ffmpeg-extra_49.0.2623.108-0ubuntu0.14.04.1.1113_armhf.deb" mode=0644
+
+    - name: Install Chromium browser
+      shell: dpkg -i /usr/local/share/monino/chromium-packages/chromium-browser_49.0.2623.108-0ubuntu0.14.04.1.1113_armhf.deb /usr/local/share/monino/chromium-packages/chromium-codecs-ffmpeg-extra_49.0.2623.108-0ubuntu0.14.04.1.1113_armhf.deb
 
     - name: Create a 'monino' group
       group: name=monino

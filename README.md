@@ -24,20 +24,22 @@ In order to try Monino out you'll need:
 Installation
 ------------
 
-1. Download the most recent Raspbian image from http://downloads.raspberrypi.org/raspbian_latest. Write the image to an SD card according to the appropriate guide:
+1. Download a Raspbian Jessy image. You can get the most recent Raspbian image from http://downloads.raspberrypi.org/raspbian_latest.
+
+2. Write the image to an SD card according to the appropriate guide:
    - for Linux: http://www.raspberrypi.org/documentation/installation/installing-images/linux.md 
    - for Windows: http://www.raspberrypi.org/documentation/installation/installing-images/windows.md
    - for Mac OS X: http://www.raspberrypi.org/documentation/installation/installing-images/mac.md
 
-2. Insert the SD card into the Raspberry Pi, plug Ethernet and power cables and boot it.
+3. Insert the SD card into the Raspberry Pi, plug Ethernet and power cables and boot it.
 
-3. Find out the IP address that got assigned to it and put it into the `hosts` file.
+4. Find out the IP address that got assigned to it and put it into the `hosts` file.
 
-4. Having Ansible installed on your local box, run `./ansible.sh` and when asked for the SSH password type `raspberry` in.
+5. Having Ansible installed on your local box, run `./ansible.sh` and when asked for the SSH password type `raspberry` in.
 
-5. Edit the configuration file `sudo vim /home/monino/config.yml` replacing the default URL with an URL of the page you want to display.
+6. Edit the configuration file `sudo vim /home/monino/config.yml` replacing the default URL with an URL of the page you want to display.
 
-6. Reboot your Raspberry Pi with a `sudo reboot` command. Plug your TV. You should now see the website on your screen.
+7. Reboot your Raspberry Pi with a `sudo reboot` command. Plug your TV. You should now see the website on your screen.
 
 
 How does it look like?
@@ -50,7 +52,7 @@ How does it look like?
 Stability
 ---------
 
-We've been using these scripts for almost a year now, combined with the https://wiki.jenkins-ci.org/display/JENKINS/Build+Monitor+Plugin plugin. No software-related issues so far, the only difficulties we're experiencing is general flakiness of the Raspberry Pi hardware itself. I.e. occasional failures to turn itself on. Can't do much about it though.
+We've been using these scripts for more than a year now, combined with the https://wiki.jenkins-ci.org/display/JENKINS/Build+Monitor+Plugin plugin. No software-related issues so far, the only difficulties we're experiencing is general flakiness of the Raspberry Pi hardware itself. I.e. occasional failures to turn itself on. Can't do much about it though.
 
 
 Future plans
