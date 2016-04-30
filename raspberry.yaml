@@ -65,6 +65,14 @@
       - zenity
       - zenity-common
 
+    - name: Remove Bluetooth support
+      apt: name={{ item }} state=absent purge=yes
+      with_items:
+      - libbluetooth3
+      - bluez
+      - bluez-firmware
+      - pi-bluetooth
+
     - name: Remove mDNS support
       apt: name={{ item }} state=absent purge=yes
       with_items:
@@ -210,6 +218,9 @@
 
     - name: Install Chromium browser
       shell: dpkg -i /usr/local/share/monino/chromium-packages/chromium-browser_49.0.2623.108-0ubuntu0.14.04.1.1113_armhf.deb /usr/local/share/monino/chromium-packages/chromium-codecs-ffmpeg-extra_49.0.2623.108-0ubuntu0.14.04.1.1113_armhf.deb
+
+    - name: Install VNC server package
+      apt: name=x11vnc state=present
 
     - name: Create a 'monino' group
       group: name=monino
