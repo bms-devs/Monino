@@ -14,17 +14,17 @@ Requirements
 ------------
 
 In order to try Monino out you'll need:
-- a Raspberry Pi Model B board (Model A doesn't have an Ethernet card, you could use Wi-Fi by buying an adapter but it'll require some manual hacking - it's possible we'll add support for it in the future)
+- a **Raspberry Pi Model B** board (Model A doesn't have an Ethernet card, you could use Wi-Fi by buying an adapter but it'll require some manual hacking - it's possible we'll add support for it in the future) or a **Raspberry Pi 2** board
 - an SD Card (4GB should be enough)
 - a micro USB power supply charger
-- a TV capable of displaying a 1920x1080 image, an HDMI cable
+- a TV capable of displaying a 1080p image, an HDMI cable
 - (optional) a case for the Raspberry Pi
 
 
 Installation
 ------------
 
-1. Download a Raspbian Jessy image. You can get the most recent Raspbian image from http://downloads.raspberrypi.org/raspbian_latest.
+1. Download a **Raspbian 7** (wheezy) or **8** (jessy) image. You can get the most recent Raspbian image from http://downloads.raspberrypi.org/raspbian_latest.
 
 2. Write the image to an SD card according to the appropriate guide:
    - for Linux: http://www.raspberrypi.org/documentation/installation/installing-images/linux.md 
@@ -47,6 +47,12 @@ How does it look like?
 
 <img src="http://i.imgur.com/5aSNBBt.jpg" alt="[Raspberry Pi board]" width="350" />
 <img src="http://i.imgur.com/iRpARwK.jpg" alt="[Sample display]" width="350" />
+
+
+Remote access
+-------------
+
+You can use either SSH or VNC to get to the box. It shouldn't be really necessary unless you want to tweak it.
 
 
 Stability
